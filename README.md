@@ -59,48 +59,48 @@ For inboxer to work you must have a gmail account and a file named "client_secre
 package main
 
 import (
-	"context"
-	"fmt"
+        "context"
+        "fmt"
 
-	"gitlab.com/hartsfield/gmailAPI"
-	"gitlab.com/hartsfield/inboxer"
-	gmail "google.golang.org/api/gmail/v1"
+        "github.com/hartsfield/gmailAPI"
+        "github.com/hartsfield/inboxer"
+        gmail "google.golang.org/api/gmail/v1"
 )
 
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.MailGoogleComScope)
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.MailGoogleComScope)
 
-	msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
-	if err != nil {
-		fmt.Println(err)
-	}
+        msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
+        if err != nil {
+                fmt.Println(err)
+        }
 
-	// Range over the messages
-	for _, msg := range msgs {
-		fmt.Println("========================================================")
-		time, err := inboxer.ReceivedTime(msg.InternalDate)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("Date: ", time)
-		md := inboxer.GetPartialMetadata(msg)
-		fmt.Println("From: ", md.From)
-		fmt.Println("Sender: ", md.Sender)
-		fmt.Println("Subject: ", md.Subject)
-		fmt.Println("Delivered To: ", md.DeliveredTo)
-		fmt.Println("To: ", md.To)
-		fmt.Println("CC: ", md.CC)
-		fmt.Println("Mailing List: ", md.MailingList)
-		fmt.Println("Thread-Topic: ", md.ThreadTopic)
-		fmt.Println("Snippet: ", msg.Snippet)
-		body, err := inboxer.GetBody(msg, "text/plain")
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(body)
-	}
+        // Range over the messages
+        for _, msg := range msgs {
+                fmt.Println("========================================================")
+                time, err := inboxer.ReceivedTime(msg.InternalDate)
+                if err != nil {
+                        fmt.Println(err)
+                }
+                fmt.Println("Date: ", time)
+                md := inboxer.GetPartialMetadata(msg)
+                fmt.Println("From: ", md.From)
+                fmt.Println("Sender: ", md.Sender)
+                fmt.Println("Subject: ", md.Subject)
+                fmt.Println("Delivered To: ", md.DeliveredTo)
+                fmt.Println("To: ", md.To)
+                fmt.Println("CC: ", md.CC)
+                fmt.Println("Mailing List: ", md.MailingList)
+                fmt.Println("Thread-Topic: ", md.ThreadTopic)
+                fmt.Println("Snippet: ", msg.Snippet)
+                body, err := inboxer.GetBody(msg, "text/plain")
+                if err != nil {
+                        fmt.Println(err)
+                }
+                fmt.Println(body)
+        }
 }
 
 ```
@@ -108,18 +108,18 @@ func main() {
 
 ```go
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
-  msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
-	if err != nil {
-		fmt.Println(err)
-	}
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
+        msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
+        if err != nil {
+                fmt.Println(err)
+        }
 
-	// Range over the messages
-	for _, msg := range msgs {
-    // do stuff
-  }
+        // Range over the messages
+        for _, msg := range msgs {
+                // do stuff
+        }
 }
 
 ```
@@ -127,104 +127,108 @@ func main() {
 
 ```go
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
 
-	msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
-	if err != nil {
-		fmt.Println(err)
-	}
+        msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
+        if err != nil {
+                fmt.Println(err)
+        }
 
-	req := &gmail.ModifyMessageRequest{
-		RemoveLabelIds: []string{"UNREAD"},
-		AddLabelIds: []string{"OLD"}
-	}
+        req := &gmail.ModifyMessageRequest{
+                RemoveLabelIds: []string{"UNREAD"},
+                AddLabelIds: []string{"OLD"}
+        }
 
-	// Range over the messages
-	for _, msg := range msgs {
-    msg, err := inboxer.MarkAs(srv, msg, req)
-	}
+        // Range over the messages
+        for _, msg := range msgs {
+                msg, err := inboxer.MarkAs(srv, msg, req)
+        }
 }
+
 ```
 ## MARK ALL "UNREAD" EMAILS AS "READ"
 
 ```go
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
 
-	inboxer.MarkAllAsRead(srv)
+        inboxer.MarkAllAsRead(srv)
 }
 ```
 ## GETTING LABELS
 
 ```go
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
 
-	labels, err := inboxer.GetLabels(srv)
-	if err != nil {
-		fmt.Println(err)
-	}
+        labels, err := inboxer.GetLabels(srv)
+        if err != nil {
+                fmt.Println(err)
+        }
 
-	for _, label := range labels {
-		fmt.Println(label)
-	}
+        for _, label := range labels {
+                fmt.Println(label)
+        }
 }
+
 ```
 ## METADATA
 
 ```go
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.MailGoogleComScope)
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.MailGoogleComScope)
 
-	msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
-	if err != nil {
-		fmt.Println(err)
-	}
+        msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
+        if err != nil {
+                fmt.Println(err)
+        }
 
-	// Range over the messages
-	for _, msg := range msgs {
-		fmt.Println("========================================================")
-		md := inboxer.GetPartialMetadata(msg)
-		fmt.Println("From: ", md.From)
-		fmt.Println("Sender: ", md.Sender)
-		fmt.Println("Subject: ", md.Subject)
-		fmt.Println("Delivered To: ", md.DeliveredTo)
-		fmt.Println("To: ", md.To)
-		fmt.Println("CC: ", md.CC)
-		fmt.Println("Mailing List: ", md.MailingList)
-		fmt.Println("Thread-Topic: ", md.ThreadTopic)
-	}
+        // Range over the messages
+        for _, msg := range msgs {
+                fmt.Println("========================================================")
+                md := inboxer.GetPartialMetadata(msg)
+                fmt.Println("From: ", md.From)
+                fmt.Println("Sender: ", md.Sender)
+                fmt.Println("Subject: ", md.Subject)
+                fmt.Println("Delivered To: ", md.DeliveredTo)
+                fmt.Println("To: ", md.To)
+                fmt.Println("CC: ", md.CC)
+                fmt.Println("Mailing List: ", md.MailingList)
+                fmt.Println("Thread-Topic: ", md.ThreadTopic)
+        }
 }
+
 ```
 ## GETTING THE EMAIL BODY
 
 ```go
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
-	msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
-	if err != nil {
-		fmt.Println(err)
-	}
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
+        msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
+        if err != nil {
+                fmt.Println(err)
+        }
 
-	// Range over the messages
-	for _, msg := range msgs {
-    body, err := inboxer.GetBody(msg, "text/plain")
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(body)
-  }
+        // Range over the messages
+        for _, msg := range msgs {
+                body, err := inboxer.GetBody(msg, "text/plain")
+                if err != nil {
+                        fmt.Println(err)
+                }
+                fmt.Println(body)
+        }
 }
+
 ```
 ## GETTING THE NUMBER OF UNREAD MESSAGES
 
@@ -232,42 +236,45 @@ func main() {
 // NOTE: to actually view the email text use inboxer.Query and query for unread
 // emails.
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
 
-	// num will be -1 on err
-  num, err :=	inboxer.CheckForUnread(srv)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf("You have %s unread emails.", num)
+        // num will be -1 on err
+        num, err :=	inboxer.CheckForUnread(srv)
+        if err != nil {
+                fmt.Println(err)
+        }
+        fmt.Printf("You have %s unread emails.", num)
 }
+
+
 ```
 ## CONVERTING DATES
 
 ```go
 // Convert UNIX time stamps to human readable format
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
 
-	msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
-	if err != nil {
-		fmt.Println(err)
-	}
+        msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
+        if err != nil {
+                fmt.Println(err)
+        }
 
-	// Range over the messages
-	for _, msg := range msgs {
-		// Convert the date
-		time, err := inboxer.ReceivedTime(msg.InternalDate)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("Date: ", time)
-  }
+        // Range over the messages
+        for _, msg := range msgs {
+                // Convert the date
+                time, err := inboxer.ReceivedTime(msg.InternalDate)
+                if err != nil {
+                        fmt.Println(err)
+                }
+                fmt.Println("Date: ", time)
+        }
 }
+
 ```
 
 ## SNIPPET
@@ -276,19 +283,19 @@ func main() {
 // Snippets are not really part of the package but I'm including them in the doc
 // because they'll likely be useful to anyone working with this package.
 func main() {
-	// Connect to the gmail API service.
-	ctx := context.Background()
-	srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
+        // Connect to the gmail API service.
+        ctx := context.Background()
+        srv := gmailAPI.ConnectToService(ctx, gmail.GmailComposeScope)
 
-	msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
-	if err != nil {
-		fmt.Println(err)
-	}
+        msgs, err := inboxer.Query(srv, "category:forums after:2017/01/01 before:2017/01/30")
+        if err != nil {
+                fmt.Println(err)
+        }
 
-	// Range over the messages
-	for _, msg := range msgs {
-		// this one is part of the api
-		fmt.Println(msg.Snippet)
-  }
+        // Range over the messages
+        for _, msg := range msgs {
+                // this one is part of the api
+                fmt.Println(msg.Snippet)
+        }
 }
 ```
