@@ -120,16 +120,6 @@ import (
 	gmail "google.golang.org/api/gmail/v1"
 )
 
-// This one allows us to use a callback function of the signature func(error),
-// that will execute when the mail is sent. 
-func callback(err error) {
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
-    fmt.Println("success")
-}
-
 func main() {
     // Connect to the gmail API service.
 	ctx := context.Background()
@@ -144,7 +134,7 @@ func main() {
 	}
 
     // send the email with the message
-	err := msg.Send(srv, msg, callback)
+	err := msg.Send(srv)
 	if err != nil {
 		log.Println(err)
 	}

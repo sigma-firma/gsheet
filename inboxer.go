@@ -52,22 +52,22 @@ type Msg struct {
 }
 
 // SendMail allows us to send mail
-func (m *Msg) Send(srv *gmail.Service, msg *Msg, callback func(error)) {
+func (m *Msg) Send(srv *gmail.Service) error {
 	var gm *gmail.Message = &gmail.Message{}
-	var msg_b []byte = []byte(
-		"From: " + msg.From + "\r\n" +
-			"To: " + msg.To + "\r\n" +
-			"Subject: " + msg.Subject + "\r\n\r\n" +
-			msg.Body)
-	gm.Raw = base64.URLEncoding.EncodeToString(msg_b)
+	var m_b []byte = []byte(
+		"From: " + m.From + "\r\n" +
+			"To: " + m.To + "\r\n" +
+			"Subject: " + m.Subject + "\r\n\r\n" +
+			m.Body)
+	gm.Raw = base64.URLEncoding.EncodeToString(m_b)
 
-	sendCall := srv.Users.Messages.Send(msg.From, gm)
+	sendCall := srv.Users.Messages.Send(m.From, gm)
 	_, err := sendCall.Do()
 	if err != nil {
-		callback(err)
+		return err
 	}
 
-	callback(err)
+	return nil
 }
 
 // MarkAs allows you to mark an email with a specific label using the
