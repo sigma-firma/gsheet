@@ -24,6 +24,7 @@
 
 Package inboxer is a Go package for checking your gmail inbox, it has the following features:
 
+  - Send emails
   - Mark emails (read/unread/important/etc)
   - Get labels used in inbox
   - Get emails by query (eg "in:sent after:2017/01/01 before:2017/01/30")
@@ -33,27 +34,29 @@ Package inboxer is a Go package for checking your gmail inbox, it has the follow
   - Convert email dates to human readable format
 
 #  USE
+
 ## CREDENTIALS:
 
 For inboxer to work you must have a gmail account and a file named "client_secret.json" containing your authorization info in the root directory of your project. To obtain credentials please see step one of this guide: https://developers.google.com/gmail/api/quickstart/go
 
- > Turning on the gmail API
+ Turning on the gmail API
 
- > - Use this wizard (https://console.developers.google.com/start/api?id=gmail) to create or select a project in the Google Developers Console and automatically turn on the API. Click Continue, then Go to credentials.
- 
- > - On the Add credentials to your project page, click the Cancel button.
- 
- > - At the top of the page, select the OAuth consent screen tab. Select an Email address, enter a Product name if not already set, and click the Save button.
- 
- > - Select the Credentials tab, click the Create credentials button and select OAuth client ID.
- 
- > - Select the application type Other, enter the name "Gmail API Quickstart", and click the Create button.
- 
- > - Click OK to dismiss the resulting dialog.
- 
- > - Click the file_download (Download JSON) button to the right of the client ID.
- 
- > - Move this file to your working directory and rename it client_secret.json.
+ - Use this wizard (https://console.developers.google.com/start/api?id=gmail) to create or select a project in the Google Developers Console and automatically turn on the API. Click Continue, then Go to credentials.
+
+ - On the Add credentials to your project page, click the Cancel button.
+
+ - At the top of the page, select the OAuth consent screen tab. Select an Email address, enter a Product name if not already set, and click the Save button.
+
+ - Select the Credentials tab, click the Create credentials button and select OAuth client ID.
+
+ - Select the application type Other, enter the name "Gmail API Quickstart", and click the Create button.
+
+ - Click OK to dismiss the resulting dialog.
+
+ - Click the file_download (Download JSON) button to the right of the client ID.
+
+ - Move this file to your working directory and rename it client_secret.json.
+
 
 ```go
 package main
@@ -103,6 +106,39 @@ func main() {
         }
 }
 
+```
+## SENDING MAIL
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/sigma-firma/gmailAPI"
+	"github.com/sigma-firma/inboxer"
+	gmail "google.golang.org/api/gmail/v1"
+)
+
+func main() {
+    // Connect to the gmail API service.
+	ctx := context.Background()
+	srv := gmailAPI.ConnectToService(ctx, gmail.MailGoogleComScope)
+
+    // Create a message
+	var msg *inboxer.Msg = &inboxer.Msg{
+		From:    "me",  // the authenticated user
+		To:      "leadershi@firma.com",
+		Subject: "testing",
+		Body:    "testing gmail api. lmk if you get this scott",
+	}
+
+    // send the email with the message
+	err := inboxer.SendMail(srv, msg)
+	if err != nil {
+		log.Println(err)
+	}
+}
 ```
 ## QUERIES
 
