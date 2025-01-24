@@ -39,8 +39,8 @@ Package inboxer is a Go package for checking your gmail inbox, it has the
 	                "context"
 	                "fmt"
 
-	                "gitlab.com/hartsfield/gmailAPI"
-	                "gitlab.com/hartsfield/inboxer"
+	                "github.com/sigma-firma/gmailAPI"
+	                "github.com/sigma-firma/inboxer"
 	                gmail "google.golang.org/api/gmail/v1"
 
 	        )

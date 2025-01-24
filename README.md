@@ -65,8 +65,8 @@ import (
         "context"
         "fmt"
 
-        "github.com/hartsfield/gmailAPI"
-        "github.com/hartsfield/inboxer"
+        "github.com/sigma-firma/gmailAPI"
+        "github.com/sigma-firma/inboxer"
         gmail "google.golang.org/api/gmail/v1"
 )
 
