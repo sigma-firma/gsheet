@@ -1,4 +1,4 @@
-module inboxer
+module github.com/sigma-firma/inboxer
 
 go 1.23.4
 
