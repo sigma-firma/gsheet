@@ -43,28 +43,34 @@ import (
 	gmail "google.golang.org/api/gmail/v1"
 )
 
-// MarkAs allows you to mark an email with a specific label using the
-// gmail.ModifyMessageRequest struct.
-func MarkAs(srv *gmail.Service, msg *gmail.Message, req *gmail.ModifyMessageRequest) (*gmail.Message, error) {
-	return srv.Users.Messages.Modify("me", msg.Id, req).Do()
+// msg is an email message
+type Msg struct {
+	From, To, Subject, Body string
 }
 
-func SendMail(srv *gmail.Service) error {
+// SendMail allows us to send mail
+func SendMail(srv *gmail.Service, msg *Msg) error {
 	var gm *gmail.Message = &gmail.Message{}
-	var msg []byte = []byte(
-		"From: youremail@gmail.com\r\n" +
-			"To: recipient@gmail.com\r\n" +
-			"Subject: My first Gmail API message\r\n\r\n" +
-			"Message body goes here!")
-	gm.Raw = base64.URLEncoding.EncodeToString(msg)
+	var msg_b []byte = []byte(
+		"From: " + msg.From + "\r\n" +
+			"To: " + msg.To + "\r\n" +
+			"Subject: " + msg.Subject + "\r\n\r\n" +
+			msg.Body)
+	gm.Raw = base64.URLEncoding.EncodeToString(msg_b)
 
-	sendCall := srv.Users.Messages.Send("me", gm)
+	sendCall := srv.Users.Messages.Send(msg.From, gm)
 	_, err := sendCall.Do()
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// MarkAs allows you to mark an email with a specific label using the
+// gmail.ModifyMessageRequest struct.
+func MarkAs(srv *gmail.Service, msg *gmail.Message, req *gmail.ModifyMessageRequest) (*gmail.Message, error) {
+	return srv.Users.Messages.Modify("me", msg.Id, req).Do()
 }
 
 // MarkAllAsRead removes the UNREAD label from all emails.
