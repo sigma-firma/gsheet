@@ -49,6 +49,19 @@ func MarkAs(srv *gmail.Service, msg *gmail.Message, req *gmail.ModifyMessageRequ
 	return srv.Users.Messages.Modify("me", msg.Id, req).Do()
 }
 
+func SendMail(srv *gmail.Service) error {
+	gm := &gmail.Message{
+		Payload: &gmail.MessagePart{Body: &gmail.MessagePartBody{Data: "test"}},
+	}
+	sendCall := srv.Users.Messages.Send("me", gm)
+	_, err := sendCall.Do()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // MarkAllAsRead removes the UNREAD label from all emails.
 func MarkAllAsRead(srv *gmail.Service) error {
 	// Request to remove the label ID "UNREAD"
