@@ -36,6 +36,7 @@ package inboxer
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -50,6 +51,7 @@ func MarkAs(srv *gmail.Service, msg *gmail.Message, req *gmail.ModifyMessageRequ
 }
 
 func SendMail(srv *gmail.Service) error {
+	fmt.Println("uyuyyvcuttc")
 	var gm *gmail.Message = &gmail.Message{}
 	var msg []byte = []byte("testing")
 	gm.Raw = base64.URLEncoding.EncodeToString(msg)
