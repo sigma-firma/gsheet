@@ -43,13 +43,16 @@ import (
 	gmail "google.golang.org/api/gmail/v1"
 )
 
-// msg is an email message
+// msg is an email message, self explanatory
 type Msg struct {
-	From, To, Subject, Body string
+	From    string
+	To      string
+	Subject string
+	Body    string
 }
 
 // SendMail allows us to send mail
-func SendMail(srv *gmail.Service, msg *Msg) error {
+func (m *Msg) Send(srv *gmail.Service, msg *Msg, callback func(error)) {
 	var gm *gmail.Message = &gmail.Message{}
 	var msg_b []byte = []byte(
 		"From: " + msg.From + "\r\n" +
@@ -61,10 +64,10 @@ func SendMail(srv *gmail.Service, msg *Msg) error {
 	sendCall := srv.Users.Messages.Send(msg.From, gm)
 	_, err := sendCall.Do()
 	if err != nil {
-		return err
+		callback(err)
 	}
 
-	return nil
+	callback(err)
 }
 
 // MarkAs allows you to mark an email with a specific label using the

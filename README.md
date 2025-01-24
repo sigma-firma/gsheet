@@ -120,6 +120,16 @@ import (
 	gmail "google.golang.org/api/gmail/v1"
 )
 
+// This one allows us to use a callback function of the signature func(error),
+// that will execute when the mail is sent. 
+func callback(err error) {
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    fmt.Println("success")
+}
+
 func main() {
     // Connect to the gmail API service.
 	ctx := context.Background()
@@ -128,13 +138,13 @@ func main() {
     // Create a message
 	var msg *inboxer.Msg = &inboxer.Msg{
 		From:    "me",  // the authenticated user
-		To:      "leadershi@firma.com",
+		To:      "leadership@firma.com",
 		Subject: "testing",
 		Body:    "testing gmail api. lmk if you get this scott",
 	}
 
     // send the email with the message
-	err := inboxer.SendMail(srv, msg)
+	err := msg.Send(srv, msg, callback)
 	if err != nil {
 		log.Println(err)
 	}
