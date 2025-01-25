@@ -87,12 +87,7 @@ func (m *Msg) Send(srv *gmail.Service) error {
 		msg.WriteString(enc)
 	}
 	msg.WriteString("\r\n--boundary--\r\n")
-	// b, err := m.CreateEmail()
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-	// gm.Raw = base64.URLEncoding.EncodeToString(b)
-	gm.Raw = base64.URLEncoding.EncodeToString(m.Bytes)
+	gm.Raw = base64.URLEncoding.EncodeToString(msg.Bytes())
 
 	sendCall := srv.Users.Messages.Send(m.From, gm)
 	_, err := sendCall.Do()
@@ -103,22 +98,6 @@ func (m *Msg) Send(srv *gmail.Service) error {
 	return nil
 }
 
-// func encodeImage(imagePath string) (string, error) {
-// 	file, err := os.Open(imagePath)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	defer file.Close()
-
-// 	reader := bufio.NewReader(file)
-// 	content, err := io.ReadAll(reader)
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-//		encoded := base64.StdEncoding.EncodeToString(content)
-//		return encoded, nil
-//	}
 func encodeImage(imagePath string) (string, error) {
 	data, err := os.ReadFile(imagePath)
 	if err != nil {
