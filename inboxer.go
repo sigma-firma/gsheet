@@ -74,8 +74,8 @@ func (m *Msg) Send(srv *gmail.Service) error {
 	msg.WriteString("Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\n")
 	msg.WriteString(m.Body + "\r\n\r\n")
 	msg.WriteString("--boundary\r\n")
-	msg.WriteString("Content-Type: image/jpeg; name=\"image." + m.MimeType + "\"\r\n")
-	msg.WriteString("Content-Disposition: inline; filename=\"image." + m.MimeType + "\"\r\n")
+	msg.WriteString("Content-Type: image/" + m.MimeType + "; name=\"globe." + m.MimeType + "\"\r\n")
+	msg.WriteString("Content-Disposition: inline; filename=\"" + m.ImagePath + "\"\r\n")
 	msg.WriteString("Content-Transfer-Encoding: base64\r\n\r\n")
 	var enc string
 	if m.ImagePath != "" {
