@@ -62,6 +62,7 @@ func (m *Msg) Send(srv *gmail.Service) error {
 		"From: " + m.From + "\r\n" +
 			"To: " + m.To + "\r\n" +
 			"Subject: " + m.Subject + "\r\n" +
+			"Content-Type: text/html; charset=\"utf-8\"\r\n\r\n" +
 			m.Body)
 	gm.Raw = base64.URLEncoding.EncodeToString(m_b)
 
