@@ -65,7 +65,6 @@ func (m *Msg) Send(srv *gmail.Service) error {
 			"Content-Type: text/html; charset=\"utf-8\"\r\n\r\n" +
 			m.Body)
 	gm.Raw = base64.URLEncoding.EncodeToString(m_b)
-
 	sendCall := srv.Users.Messages.Send(m.From, gm)
 	_, err := sendCall.Do()
 	if err != nil {
