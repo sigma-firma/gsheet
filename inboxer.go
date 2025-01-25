@@ -57,19 +57,21 @@ type Msg struct {
 	ImagePath string
 	MimeType  string
 	Markup    string
+	Bytes     []byte
 }
 
 // SendMail allows us to send mail
 func (m *Msg) Send(srv *gmail.Service) error {
 	var gm *gmail.Message = &gmail.Message{}
-	b, err := m.createEmail()
-	if err != nil {
-		log.Println(err)
-	}
-	gm.Raw = base64.URLEncoding.EncodeToString(b)
+	// b, err := m.CreateEmail()
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+	// gm.Raw = base64.URLEncoding.EncodeToString(b)
+	gm.Raw = base64.URLEncoding.EncodeToString(m.Bytes)
 
 	sendCall := srv.Users.Messages.Send(m.From, gm)
-	_, err = sendCall.Do()
+	_, err := sendCall.Do()
 	if err != nil {
 		return err
 	}
@@ -102,7 +104,7 @@ func encodeImage(imagePath string) (string, error) {
 	return base64.StdEncoding.EncodeToString(data), nil
 }
 
-func (m *Msg) createEmail() ([]byte, error) {
+func (m *Msg) CreateEmail() ([]byte, error) {
 	var buf bytes.Buffer
 	w := multipart.NewWriter(&buf)
 
@@ -146,6 +148,7 @@ func (m *Msg) createEmail() ([]byte, error) {
 
 	}
 	w.Close()
+	m.Bytes = buf.Bytes()
 
 	return buf.Bytes(), nil
 }
