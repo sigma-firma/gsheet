@@ -34,8 +34,15 @@ package inboxer
 // spell checg
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/base64"
 	"errors"
+	"io"
+	"log"
+	"mime/multipart"
+	"net/textproto"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -45,29 +52,95 @@ import (
 
 // msg is an email message, self explanatory
 type Msg struct {
-	From    string
-	To      string
-	Subject string
-	Body    string
+	From      string
+	To        string
+	Subject   string
+	Body      string
+	ImagePath string
+	MimeType  string
+	Markup    string
 }
 
 // SendMail allows us to send mail
 func (m *Msg) Send(srv *gmail.Service) error {
 	var gm *gmail.Message = &gmail.Message{}
-	var m_b []byte = []byte(
-		"From: " + m.From + "\r\n" +
-			"To: " + m.To + "\r\n" +
-			"Subject: " + m.Subject + "\r\n\r\n" +
-			m.Body)
-	gm.Raw = base64.URLEncoding.EncodeToString(m_b)
+	b, err := m.createEmail()
+	if err != nil {
+		log.Println(err)
+	}
+	gm.Raw = base64.URLEncoding.EncodeToString(b)
 
 	sendCall := srv.Users.Messages.Send(m.From, gm)
-	_, err := sendCall.Do()
+	_, err = sendCall.Do()
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func encodeImage(imagePath string) (string, error) {
+	file, err := os.Open(imagePath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+	content, err := io.ReadAll(reader)
+	if err != nil {
+		return "", err
+	}
+
+	encoded := base64.StdEncoding.EncodeToString(content)
+	return encoded, nil
+}
+
+func (m *Msg) createEmail() ([]byte, error) {
+	var buf bytes.Buffer
+	w := multipart.NewWriter(&buf)
+
+	// Create the text part
+	textPart, err := w.CreatePart(textproto.MIMEHeader{
+		"Content-Type": []string{"text/plain; charset=utf-8"},
+	})
+	if err != nil {
+		return nil, err
+	}
+	var m_b []byte = []byte(
+		"From: " + m.From + "\r\n" +
+			"To: " + m.To + "\r\n" +
+			"Subject: " + m.Subject + "\r\n\r\n" +
+			m.Body)
+
+	_, err = textPart.Write([]byte(m_b))
+	if err != nil {
+		log.Println(err)
+	}
+
+	if m.ImagePath != "" {
+		// Create the image part
+		encodedImage, err := encodeImage(m.ImagePath)
+		if err != nil {
+			return nil, err
+		}
+		imagePart, err := w.CreatePart(textproto.MIMEHeader{
+			"Content-Type":              []string{"image/" + m.MimeType}, // Adjust content type as needed
+			"Content-Transfer-Encoding": []string{"base64"},
+			"Content-Disposition":       []string{"inline; filename=\"image.png\""},
+		})
+		if err != nil {
+			return nil, err
+		}
+		_, err = imagePart.Write([]byte(encodedImage))
+		if err != nil {
+			log.Println(err)
+		}
+
+		w.Close()
+	}
+
+	return buf.Bytes(), nil
 }
 
 // MarkAs allows you to mark an email with a specific label using the
