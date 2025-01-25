@@ -113,6 +113,7 @@ func (m *Msg) createEmail() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Println(m.To)
 	var m_b []byte = []byte(
 		"From: " + m.From + "\r\n" +
 			"To: " + m.To + "\r\n" +
