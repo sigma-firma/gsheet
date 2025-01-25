@@ -63,7 +63,7 @@ type Msg struct {
 // SendMail allows us to send mail
 func (m *Msg) Send(srv *gmail.Service) error {
 	var gm *gmail.Message = &gmail.Message{}
-	// Create email message
+	// Create email message .
 	var msg bytes.Buffer
 	msg.WriteString("From: " + m.From + "\r\n")
 	msg.WriteString("To:" + m.To + "\r\n")
