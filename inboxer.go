@@ -64,30 +64,36 @@ type Msg struct {
 func (m *Msg) Send(srv *gmail.Service) error {
 	var gm *gmail.Message = &gmail.Message{}
 	// Create email message
-	var msg bytes.Buffer
-	msg.WriteString("From: " + m.From + "\r\n")
-	msg.WriteString("To:" + m.To + "\r\n")
-	msg.WriteString("Subject: " + m.Subject + "\r\n")
-	msg.WriteString("MIME-Version: 1.0\r\n")
-	msg.WriteString("Content-Type: multipart/related; boundary=\"boundary\"\r\n\r\n")
-	msg.WriteString("--boundary\r\n")
-	msg.WriteString("Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\n")
-	msg.WriteString(m.Body + "\r\n\r\n")
-	msg.WriteString("--boundary\r\n")
-	msg.WriteString("Content-Type: image/jpeg; name=\"globe." + m.MimeType + "\"\r\n")
-	msg.WriteString("Content-Disposition: inline; filename=\"globe." + m.MimeType + "\"\r\n")
-	msg.WriteString("Content-Transfer-Encoding: base64\r\n\r\n")
-	var enc string
-	if m.ImagePath != "" {
-		var err error
-		enc, err = encodeImage(m.ImagePath)
-		if err != nil {
-			log.Println(err)
-		}
-		msg.WriteString(enc)
-	}
-	msg.WriteString("\r\n--boundary--\r\n")
-	gm.Raw = base64.URLEncoding.EncodeToString(msg.Bytes())
+	// var msg bytes.Buffer
+	// msg.WriteString("From: " + m.From + "\r\n")
+	// msg.WriteString("To:" + m.To + "\r\n")
+	// msg.WriteString("Subject: " + m.Subject + "\r\n")
+	// msg.WriteString("MIME-Version: 1.0\r\n")
+	// msg.WriteString("Content-Type: multipart/related; boundary=\"boundary\"\r\n\r\n")
+	// msg.WriteString("--boundary\r\n")
+	// msg.WriteString("Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\n")
+	// msg.WriteString(m.Body + "\r\n\r\n")
+	// msg.WriteString("--boundary\r\n")
+	// msg.WriteString("Content-Type: image/jpeg; name=\"globe." + m.MimeType + "\"\r\n")
+	// msg.WriteString("Content-Disposition: inline; filename=\"globe." + m.MimeType + "\"\r\n")
+	// msg.WriteString("Content-Transfer-Encoding: base64\r\n\r\n")
+	// var enc string
+	// if m.ImagePath != "" {
+	// 	var err error
+	// 	enc, err = encodeImage(m.ImagePath)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 	}
+	// 	msg.WriteString(enc)
+	// }
+	// msg.WriteString("\r\n--boundary--\r\n")
+	var m_b []byte = []byte(
+		"From: " + m.From + "\r\n" +
+			"To: " + m.To + "\r\n" +
+			"Subject: " + m.Subject + "\r\n\r\n" +
+			m.Body)
+
+	gm.Raw = base64.URLEncoding.EncodeToString(m_b)
 
 	sendCall := srv.Users.Messages.Send(m.From, gm)
 	_, err := sendCall.Do()
