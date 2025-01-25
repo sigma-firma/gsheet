@@ -71,10 +71,7 @@ func (m *Msg) Send(srv *gmail.Service) error {
 	msg.WriteString("MIME-Version: 1.0\r\n")
 	msg.WriteString("Content-Type: multipart/related; boundary=\"boundary\"\r\n\r\n")
 	msg.WriteString("--boundary\r\n")
-	msg.WriteString("Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\n")
-	msg.WriteString(m.Body + "\r\n\r\n")
-	msg.WriteString("--boundary\r\n")
-	msg.WriteString("Content-Type: image/" + m.MimeType + "; name=\"globe." + m.MimeType + "\"\r\n")
+	msg.WriteString("Content-Type: image/" + m.MimeType + "; name=\"image." + m.MimeType + "\"\r\n")
 	msg.WriteString("Content-Disposition: inline; filename=\"" + m.ImagePath + "\"\r\n")
 	msg.WriteString("Content-Transfer-Encoding: base64\r\n\r\n")
 	var enc string
@@ -86,6 +83,9 @@ func (m *Msg) Send(srv *gmail.Service) error {
 		}
 		msg.WriteString(enc)
 	}
+	msg.WriteString("--boundary\r\n")
+	msg.WriteString("Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\n")
+	msg.WriteString(m.Body + "\r\n\r\n")
 	msg.WriteString("\r\n--boundary--\r\n")
 	// var m_b []byte = []byte(
 	// 	"From: " + m.From + "\r\n" +
