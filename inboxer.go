@@ -65,17 +65,19 @@ func (m *Msg) Send(srv *gmail.Service) error {
 	var gm *gmail.Message = &gmail.Message{}
 	// Create email message .
 	var msg bytes.Buffer
+	msg.WriteString("MIME-Version: 1.0\r\n")
 	msg.WriteString("From: " + m.From + "\r\n")
 	msg.WriteString("To:" + m.To + "\r\n")
 	msg.WriteString("Subject: " + m.Subject + "\r\n")
-	msg.WriteString("MIME-Version: 1.0\r\n")
-	msg.WriteString("Content-Type: multipart/related; boundary=\"boundary\"\r\n\r\n")
-	msg.WriteString("--boundary\r\n")
+	msg.WriteString("Content-Type: multipart/related; boundary=\"boundary00\"\r\n\r\n")
+	msg.WriteString("--boundary00\r\n")
 	msg.WriteString("Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\n")
+	msg.WriteString("boundary=boundary09\r\n")
 	msg.WriteString(m.Body + "\r\n\r\n")
-	msg.WriteString("--boundary\r\n")
-	msg.WriteString("Content-Type: image/jpeg; name=\"globe." + m.MimeType + "\"\r\n")
-	msg.WriteString("Content-Disposition: inline; filename=\"globe." + m.MimeType + "\"\r\n")
+	msg.WriteString("--boundary09--\r\n")
+	msg.WriteString("boundary=boundary809\r\n")
+	msg.WriteString("Content-Type: image/" + m.MimeType + "; name=\"image." + m.MimeType + "\"\r\n")
+	msg.WriteString("Content-Disposition: inline; filename=\"image." + m.MimeType + "\"\r\n")
 	msg.WriteString("Content-Transfer-Encoding: base64\r\n\r\n")
 	var enc string
 	if m.ImagePath != "" {
@@ -86,7 +88,7 @@ func (m *Msg) Send(srv *gmail.Service) error {
 		}
 		msg.WriteString(enc)
 	}
-	msg.WriteString("\r\n--boundary--\r\n")
+	msg.WriteString("\r\n--boundary809--\r\n")
 	// var m_b []byte = []byte(
 	// 	"From: " + m.From + "\r\n" +
 	// 		"To: " + m.To + "\r\n" +
