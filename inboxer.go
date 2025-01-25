@@ -113,7 +113,7 @@ func (m *Msg) createEmail() ([]byte, error) {
 			"Subject: " + m.Subject + "\r\n\r\n" +
 			m.Body)
 
-	_, err = textPart.Write([]byte(m_b))
+	_, err = textPart.Write(m_b)
 	if err != nil {
 		log.Println(err)
 	}
