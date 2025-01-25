@@ -34,11 +34,9 @@ package inboxer
 // spell checg
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/base64"
 	"errors"
-	"io"
 	"log"
 	"mime/multipart"
 	"net/textproto"
@@ -79,21 +77,29 @@ func (m *Msg) Send(srv *gmail.Service) error {
 	return nil
 }
 
+// func encodeImage(imagePath string) (string, error) {
+// 	file, err := os.Open(imagePath)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	defer file.Close()
+
+// 	reader := bufio.NewReader(file)
+// 	content, err := io.ReadAll(reader)
+// 	if err != nil {
+// 		return "", err
+// 	}
+
+//		encoded := base64.StdEncoding.EncodeToString(content)
+//		return encoded, nil
+//	}
 func encodeImage(imagePath string) (string, error) {
-	file, err := os.Open(imagePath)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	reader := bufio.NewReader(file)
-	content, err := io.ReadAll(reader)
+	data, err := os.ReadFile(imagePath)
 	if err != nil {
 		return "", err
 	}
 
-	encoded := base64.StdEncoding.EncodeToString(content)
-	return encoded, nil
+	return base64.StdEncoding.EncodeToString(data), nil
 }
 
 func (m *Msg) createEmail() ([]byte, error) {
@@ -127,7 +133,7 @@ func (m *Msg) createEmail() ([]byte, error) {
 		imagePart, err := w.CreatePart(textproto.MIMEHeader{
 			"Content-Type":              []string{"image/" + m.MimeType}, // Adjust content type as needed
 			"Content-Transfer-Encoding": []string{"base64"},
-			"Content-Disposition":       []string{"inline; filename=\"image.png\""},
+			"Content-Disposition":       []string{"inline; filename=\"globe.gif\""},
 		})
 		if err != nil {
 			return nil, err
