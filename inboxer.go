@@ -67,16 +67,16 @@ func (m *Msg) Send(srv *gmail.Service) error {
 	var msg bytes.Buffer
 	msg.WriteString("From: " + m.From + "\r\n")
 	msg.WriteString("To:" + m.To + "\r\n")
-	msg.WriteString("Subject: " + m.Subject + "\r\n")
-	msg.WriteString(m.Body + "\r\n\r\n")
 	msg.WriteString("MIME-Version: 1.0\r\n")
 	msg.WriteString("Content-Type: multipart/related; boundary=\"boundary\"\r\n\r\n")
+	msg.WriteString("Content-Transfer-Encoding: base64\r\n\r\n")
+	msg.WriteString("Subject: " + m.Subject + "\r\n")
 	msg.WriteString("--boundary\r\n")
 	msg.WriteString("Content-Type: text/plain; charset=\"UTF-8\"\r\n\r\n")
+	msg.WriteString(m.Body + "\r\n\r\n")
 	msg.WriteString("--boundary\r\n")
 	msg.WriteString("Content-Type: image/" + m.MimeType + "; name=\"image." + m.MimeType + "\"\r\n")
 	msg.WriteString("Content-Disposition: inline; filename=\"" + m.ImagePath + "\"\r\n")
-	msg.WriteString("Content-Transfer-Encoding: base64\r\n\r\n")
 	var enc string
 	if m.ImagePath != "" {
 		var err error
