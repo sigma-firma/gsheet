@@ -137,8 +137,8 @@ func (m *Msg) createEmail() ([]byte, error) {
 			log.Println(err)
 		}
 
-		w.Close()
 	}
+	w.Close()
 
 	return buf.Bytes(), nil
 }
