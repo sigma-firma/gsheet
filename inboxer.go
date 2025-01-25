@@ -34,13 +34,8 @@ package inboxer
 // spell checg
 
 import (
-	"bytes"
 	"encoding/base64"
 	"errors"
-	"log"
-	"mime/multipart"
-	"net/textproto"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -66,9 +61,8 @@ func (m *Msg) Send(srv *gmail.Service) error {
 	var m_b []byte = []byte(
 		"From: " + m.From + "\r\n" +
 			"To: " + m.To + "\r\n" +
-			"Subject: " + m.Subject + "\r\n\r\n" +
+			"Subject: " + m.Subject + "\r\n" +
 			m.Body)
-
 	gm.Raw = base64.URLEncoding.EncodeToString(m_b)
 
 	sendCall := srv.Users.Messages.Send(m.From, gm)
@@ -78,65 +72,6 @@ func (m *Msg) Send(srv *gmail.Service) error {
 	}
 
 	return nil
-}
-
-func encodeImage(imagePath string) (string, error) {
-	data, err := os.ReadFile(imagePath)
-	if err != nil {
-		return "", err
-	}
-
-	return base64.StdEncoding.EncodeToString(data), nil
-}
-
-func (m *Msg) CreateEmail() ([]byte, error) {
-	var buf bytes.Buffer
-	w := multipart.NewWriter(&buf)
-
-	// Create the text part
-	textPart, err := w.CreatePart(textproto.MIMEHeader{
-		"Content-Type": []string{"text/plain; charset=utf-8"},
-	})
-	if err != nil {
-		return nil, err
-	}
-	log.Println(m.To)
-	var m_b []byte = []byte(
-		"From: " + m.From + "\r\n" +
-			"To: " + m.To + "\r\n" +
-			"Subject: " + m.Subject + "\r\n\r\n" +
-			m.Body)
-
-	_, err = textPart.Write(m_b)
-	if err != nil {
-		log.Println(err)
-	}
-
-	if m.ImagePath != "" {
-		// Create the image part
-		encodedImage, err := encodeImage(m.ImagePath)
-		if err != nil {
-			return nil, err
-		}
-		imagePart, err := w.CreatePart(textproto.MIMEHeader{
-
-			"Content-Type":              []string{"image/" + m.MimeType}, // Adjust content type as needed
-			"Content-Transfer-Encoding": []string{"base64"},
-			"Content-Disposition":       []string{"inline; filename=\"globe.gif\""},
-		})
-		if err != nil {
-			return nil, err
-		}
-		_, err = imagePart.Write([]byte(encodedImage))
-		if err != nil {
-			log.Println(err)
-		}
-
-	}
-	w.Close()
-	m.Bytes = buf.Bytes()
-
-	return buf.Bytes(), nil
 }
 
 // MarkAs allows you to mark an email with a specific label using the
