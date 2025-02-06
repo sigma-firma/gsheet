@@ -53,10 +53,10 @@ type Msg struct {
 	MimeType  string
 	Markup    string
 	Bytes     []byte
+	Formed    *gmail.Message
 }
 
-// SendMail allows us to send mail
-func (m *Msg) Send(srv *gmail.Service) error {
+func (m *Msg) Form() {
 	var gm *gmail.Message = &gmail.Message{}
 	var m_b []byte = []byte(
 		"From: " + m.From + "\r\n" +
@@ -65,7 +65,13 @@ func (m *Msg) Send(srv *gmail.Service) error {
 			"Content-Type: text/html; charset=\"utf-8\"\r\n\r\n" +
 			m.Body)
 	gm.Raw = base64.URLEncoding.EncodeToString(m_b)
-	sendCall := srv.Users.Messages.Send(m.From, gm)
+	m.Formed = gm
+}
+
+// SendMail allows us to send mail
+func (m *Msg) Send(srv *gmail.Service) error {
+	m.Form()
+	sendCall := srv.Users.Messages.Send(m.From, m.Formed)
 	_, err := sendCall.Do()
 	if err != nil {
 		return err
