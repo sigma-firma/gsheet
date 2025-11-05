@@ -140,7 +140,7 @@ func (a *Access) Cycle(rate time.Duration) {
 			if err != nil {
 				log.Println(err)
 			}
-			a.RefreshRate.Reset(rate)
+			a.RefreshRate.Reset(rate.Abs())
 		}
 	}()
 }
